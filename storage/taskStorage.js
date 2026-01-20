@@ -46,3 +46,10 @@ export const deleteTask = async (id) => {
   await saveTasks(updated);
   return updated;
 };
+
+export const clearCompleted = async () => {
+  const tasks = await getTasks();
+  const updated = tasks.filter((task) => !task.completed);
+  await saveTasks(updated);
+  return updated;
+};
