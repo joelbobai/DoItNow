@@ -1,14 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
-import {
-  FlatList,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import TaskItem from "../components/TaskItem";
 import {
   clearCompleted,
@@ -30,7 +24,7 @@ const TaskListScreen = () => {
   useFocusEffect(
     useCallback(() => {
       loadTasks();
-    }, [loadTasks])
+    }, [loadTasks]),
   );
 
   const handleToggle = async (id) => {
@@ -71,7 +65,9 @@ const TaskListScreen = () => {
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Do It Now</Text>
-          <Text style={styles.subtitle}>Plan, focus, and finish strong today.</Text>
+          <Text style={styles.subtitle}>
+            Plan, focus, and finish strong today.
+          </Text>
         </View>
         <View style={styles.statsCard}>
           <View style={styles.statsRow}>
@@ -135,7 +131,11 @@ const TaskListScreen = () => {
           data={filteredTasks}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <TaskItem task={item} onToggle={handleToggle} onDelete={handleDelete} />
+            <TaskItem
+              task={item}
+              onToggle={handleToggle}
+              onDelete={handleDelete}
+            />
           )}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>

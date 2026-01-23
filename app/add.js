@@ -3,7 +3,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
@@ -11,6 +10,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { addTask } from "../storage/taskStorage";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AddTaskScreen = () => {
   const router = useRouter();
