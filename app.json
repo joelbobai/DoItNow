@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "DoItNow",
-    "slug": "DoItNow",
+    "slug": "doitnow",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.doitnow.doitnow"
     },
     "web": {
       "output": "static",
@@ -43,6 +44,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "1e24bbcd-1585-450d-96fb-7e794824f6a5"
+      }
+    },
+    "owner": "joelbobai"
   }
 }
