@@ -5,6 +5,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TaskItem from "../components/TaskItem";
 import {
+  addTask,
   clearCompleted,
   deleteTask,
   getTasks,
@@ -41,6 +42,19 @@ const TaskListScreen = () => {
     const updated = await clearCompleted();
     setTasks(updated);
   };
+
+  const handleQuickAdd = async (title) => {
+    const updated = await addTask(title);
+    setTasks(updated);
+    setFilter("all");
+  };
+
+  const quickAddOptions = [
+    "Review priorities",
+    "Reply to emails",
+    "Plan tomorrow",
+    "Take a walk",
+  ];
 
   const summary = useMemo(() => {
     const total = tasks.length;
@@ -100,6 +114,24 @@ const TaskListScreen = () => {
           <View style={styles.statsFooter}>
             <Text style={styles.statsFooterText}>{summary.active} active</Text>
             <Text style={styles.statsFooterText}>{summary.completed} done</Text>
+          </View>
+        </View>
+        <View style={styles.quickAddCard}>
+          <Text style={styles.quickAddTitle}>Quick add</Text>
+          <Text style={styles.quickAddSubtitle}>
+            Suggestions that work without extra permissions.
+          </Text>
+          <View style={styles.quickAddRow}>
+            {quickAddOptions.map((option) => (
+              <Pressable
+                key={option}
+                onPress={() => handleQuickAdd(option)}
+                style={styles.quickAddChip}
+                accessibilityRole="button"
+              >
+                <Text style={styles.quickAddChipText}>{option}</Text>
+              </Pressable>
+            ))}
           </View>
         </View>
         <View style={styles.filterRow}>
@@ -270,6 +302,46 @@ const styles = StyleSheet.create({
   listContent: {
     paddingTop: 16,
     paddingBottom: 140,
+  },
+  quickAddCard: {
+    backgroundColor: "#FFFFFF",
+    marginHorizontal: 20,
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 18,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.08,
+    shadowRadius: 14,
+    elevation: 3,
+  },
+  quickAddTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#0F172A",
+  },
+  quickAddSubtitle: {
+    marginTop: 6,
+    fontSize: 13,
+    color: "#64748B",
+  },
+  quickAddRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 12,
+  },
+  quickAddChip: {
+    backgroundColor: "#EFF6FF",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 999,
+    marginRight: 10,
+    marginBottom: 10,
+  },
+  quickAddChipText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#1D4ED8",
   },
   emptyList: {
     flexGrow: 1,
