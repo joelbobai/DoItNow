@@ -1,7 +1,7 @@
+import { useFocusEffect } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Pressable, SectionList, StyleSheet, Text, View } from "react-native";
-import { useRouter } from "expo-router";
-import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TaskItem from "../components/TaskItem";
 import {
@@ -134,8 +134,12 @@ const TaskListScreen = () => {
                   />
                 </View>
                 <View style={styles.statsFooter}>
-                  <Text style={styles.statsFooterText}>{summary.active} active</Text>
-                  <Text style={styles.statsFooterText}>{summary.completed} done</Text>
+                  <Text style={styles.statsFooterText}>
+                    {summary.active} active
+                  </Text>
+                  <Text style={styles.statsFooterText}>
+                    {summary.completed} done
+                  </Text>
                 </View>
               </View>
               <View style={styles.quickAddCard}>
@@ -217,7 +221,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 20,
-    paddingTop: 12,
+    paddingBottom: 5,
   },
   title: {
     fontSize: 30,
