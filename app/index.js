@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, SectionList, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -74,93 +74,21 @@ const TaskListScreen = () => {
     return tasks;
   }, [filter, tasks]);
 
+  const taskSections = useMemo(
+    () => [
+      {
+        key: "tasks",
+        data: filteredTasks,
+      },
+    ],
+    [filteredTasks],
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Do It Now</Text>
-          <Text style={styles.subtitle}>
-            Plan, focus, and finish strong today.
-          </Text>
-        </View>
-        <View style={styles.statsCard}>
-          <View style={styles.statsRow}>
-            <View>
-              <Text style={styles.statsLabel}>Today's progress</Text>
-              <Text style={styles.statsValue}>
-                {summary.completed}/{summary.total} complete
-              </Text>
-            </View>
-            <Pressable
-              accessibilityRole="button"
-              onPress={handleClearCompleted}
-              style={[
-                styles.clearButton,
-                summary.completed === 0 && styles.clearButtonDisabled,
-              ]}
-              disabled={summary.completed === 0}
-            >
-              <Text style={styles.clearButtonText}>Clear done</Text>
-            </Pressable>
-          </View>
-          <View style={styles.progressTrack}>
-            <View
-              style={[
-                styles.progressFill,
-                { width: `${Math.round(summary.progress * 100)}%` },
-              ]}
-            />
-          </View>
-          <View style={styles.statsFooter}>
-            <Text style={styles.statsFooterText}>{summary.active} active</Text>
-            <Text style={styles.statsFooterText}>{summary.completed} done</Text>
-          </View>
-        </View>
-        <View style={styles.quickAddCard}>
-          <Text style={styles.quickAddTitle}>Quick add</Text>
-          <Text style={styles.quickAddSubtitle}>
-            Suggestions that work without extra permissions.
-          </Text>
-          <View style={styles.quickAddRow}>
-            {quickAddOptions.map((option) => (
-              <Pressable
-                key={option}
-                onPress={() => handleQuickAdd(option)}
-                style={styles.quickAddChip}
-                accessibilityRole="button"
-              >
-                <Text style={styles.quickAddChipText}>{option}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-        <View style={styles.filterRow}>
-          {[
-            { key: "all", label: "All" },
-            { key: "active", label: "Active" },
-            { key: "completed", label: "Completed" },
-          ].map((item) => (
-            <Pressable
-              key={item.key}
-              onPress={() => setFilter(item.key)}
-              style={[
-                styles.filterChip,
-                filter === item.key && styles.filterChipActive,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.filterText,
-                  filter === item.key && styles.filterTextActive,
-                ]}
-              >
-                {item.label}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-        <FlatList
-          data={filteredTasks}
+        <SectionList
+          sections={taskSections}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TaskItem
@@ -168,6 +96,94 @@ const TaskListScreen = () => {
               onToggle={handleToggle}
               onDelete={handleDelete}
             />
+          )}
+          ListHeaderComponent={
+            <>
+              <View style={styles.header}>
+                <Text style={styles.title}>Do It Now</Text>
+                <Text style={styles.subtitle}>
+                  Plan, focus, and finish strong today.
+                </Text>
+              </View>
+              <View style={styles.statsCard}>
+                <View style={styles.statsRow}>
+                  <View>
+                    <Text style={styles.statsLabel}>Today’s progress</Text>
+                    <Text style={styles.statsValue}>
+                      {summary.completed}/{summary.total} complete
+                    </Text>
+                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    onPress={handleClearCompleted}
+                    style={[
+                      styles.clearButton,
+                      summary.completed === 0 && styles.clearButtonDisabled,
+                    ]}
+                    disabled={summary.completed === 0}
+                  >
+                    <Text style={styles.clearButtonText}>Clear done</Text>
+                  </Pressable>
+                </View>
+                <View style={styles.progressTrack}>
+                  <View
+                    style={[
+                      styles.progressFill,
+                      { width: `${Math.round(summary.progress * 100)}%` },
+                    ]}
+                  />
+                </View>
+                <View style={styles.statsFooter}>
+                  <Text style={styles.statsFooterText}>{summary.active} active</Text>
+                  <Text style={styles.statsFooterText}>{summary.completed} done</Text>
+                </View>
+              </View>
+              <View style={styles.quickAddCard}>
+                <Text style={styles.quickAddTitle}>Quick add</Text>
+                <Text style={styles.quickAddSubtitle}>
+                  Suggestions that work without extra permissions.
+                </Text>
+                <View style={styles.quickAddRow}>
+                  {quickAddOptions.map((option) => (
+                    <Pressable
+                      key={option}
+                      onPress={() => handleQuickAdd(option)}
+                      style={styles.quickAddChip}
+                      accessibilityRole="button"
+                    >
+                      <Text style={styles.quickAddChipText}>{option}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            </>
+          }
+          renderSectionHeader={() => (
+            <View style={styles.filterRow}>
+              {[
+                { key: "all", label: "All" },
+                { key: "active", label: "Active" },
+                { key: "completed", label: "Completed" },
+              ].map((item) => (
+                <Pressable
+                  key={item.key}
+                  onPress={() => setFilter(item.key)}
+                  style={[
+                    styles.filterChip,
+                    filter === item.key && styles.filterChipActive,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.filterText,
+                      filter === item.key && styles.filterTextActive,
+                    ]}
+                  >
+                    {item.label}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
           )}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
@@ -280,6 +296,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingHorizontal: 20,
     paddingTop: 16,
+    paddingBottom: 10,
+    backgroundColor: "#F8FAFC",
   },
   filterChip: {
     backgroundColor: "#E2E8F0",
@@ -300,7 +318,6 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   listContent: {
-    paddingTop: 16,
     paddingBottom: 140,
   },
   quickAddCard: {
