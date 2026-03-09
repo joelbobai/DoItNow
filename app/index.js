@@ -1,6 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, SectionList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TaskItem from "../components/TaskItem";
@@ -13,9 +13,12 @@ import {
 } from "../storage/taskStorage";
 
 const TaskListScreen = () => {
+  const focusDurationSeconds = 25 * 60;
   const router = useRouter();
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState("all");
+  const [focusSecondsLeft, setFocusSecondsLeft] = useState(focusDurationSeconds);
+  const [isFocusRunning, setIsFocusRunning] = useState(false);
 
   const loadTasks = useCallback(async () => {
     const stored = await getTasks();
@@ -55,6 +58,41 @@ const TaskListScreen = () => {
     "Plan tomorrow",
     "Take a walk",
   ];
+
+  useEffect(() => {
+    if (!isFocusRunning) {
+      return;
+    }
+
+    if (focusSecondsLeft === 0) {
+      setIsFocusRunning(false);
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setFocusSecondsLeft((seconds) => Math.max(seconds - 1, 0));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [focusSecondsLeft, isFocusRunning]);
+
+  const toggleFocusTimer = () => {
+    if (focusSecondsLeft === 0) {
+      setFocusSecondsLeft(focusDurationSeconds);
+      setIsFocusRunning(true);
+      return;
+    }
+
+    setIsFocusRunning((prev) => !prev);
+  };
+
+  const resetFocusTimer = () => {
+    setFocusSecondsLeft(focusDurationSeconds);
+    setIsFocusRunning(false);
+  };
+
+  const focusMinutes = String(Math.floor(focusSecondsLeft / 60)).padStart(2, "0");
+  const focusSeconds = String(focusSecondsLeft % 60).padStart(2, "0");
 
   const summary = useMemo(() => {
     const total = tasks.length;
@@ -158,6 +196,37 @@ const TaskListScreen = () => {
                       <Text style={styles.quickAddChipText}>{option}</Text>
                     </Pressable>
                   ))}
+                </View>
+              </View>
+              <View style={styles.focusCard}>
+                <Text style={styles.focusTitle}>Focus sprint</Text>
+                <Text style={styles.focusSubtitle}>
+                  Built-in timer that runs fully offline and needs no permissions.
+                </Text>
+                <Text style={styles.focusTime}>
+                  {focusMinutes}:{focusSeconds}
+                </Text>
+                <View style={styles.focusActions}>
+                  <Pressable
+                    onPress={toggleFocusTimer}
+                    style={styles.focusPrimaryButton}
+                    accessibilityRole="button"
+                  >
+                    <Text style={styles.focusPrimaryButtonText}>
+                      {focusSecondsLeft === 0
+                        ? "Start again"
+                        : isFocusRunning
+                          ? "Pause"
+                          : "Start"}
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={resetFocusTimer}
+                    style={styles.focusSecondaryButton}
+                    accessibilityRole="button"
+                  >
+                    <Text style={styles.focusSecondaryButtonText}>Reset</Text>
+                  </Pressable>
                 </View>
               </View>
             </>
@@ -363,6 +432,63 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "600",
     color: "#1D4ED8",
+  },
+  focusCard: {
+    backgroundColor: "#FFFFFF",
+    marginHorizontal: 20,
+    marginTop: 2,
+    marginBottom: 4,
+    padding: 16,
+    borderRadius: 18,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.08,
+    shadowRadius: 14,
+    elevation: 3,
+  },
+  focusTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#0F172A",
+  },
+  focusSubtitle: {
+    marginTop: 6,
+    fontSize: 13,
+    color: "#64748B",
+  },
+  focusTime: {
+    fontSize: 40,
+    letterSpacing: 2,
+    fontWeight: "700",
+    color: "#1D4ED8",
+    marginTop: 14,
+  },
+  focusActions: {
+    flexDirection: "row",
+    marginTop: 12,
+  },
+  focusPrimaryButton: {
+    backgroundColor: "#1D4ED8",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 999,
+    marginRight: 10,
+  },
+  focusPrimaryButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+    fontSize: 13,
+  },
+  focusSecondaryButton: {
+    backgroundColor: "#E2E8F0",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 999,
+  },
+  focusSecondaryButtonText: {
+    color: "#334155",
+    fontWeight: "600",
+    fontSize: 13,
   },
   emptyList: {
     flexGrow: 1,
