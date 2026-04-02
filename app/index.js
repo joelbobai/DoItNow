@@ -19,6 +19,7 @@ const TaskListScreen = () => {
   const [filter, setFilter] = useState("all");
   const [focusSecondsLeft, setFocusSecondsLeft] = useState(focusDurationSeconds);
   const [isFocusRunning, setIsFocusRunning] = useState(false);
+  const [tipIndex, setTipIndex] = useState(0);
 
   const loadTasks = useCallback(async () => {
     const stored = await getTasks();
@@ -58,6 +59,12 @@ const TaskListScreen = () => {
     "Plan tomorrow",
     "Take a walk",
   ];
+  const noPermissionTips = [
+    "Start with a 2-minute version of your task to build momentum.",
+    "Pick one must-do task before checking messages.",
+    "Batch similar tasks together to reduce context switching.",
+    "Leave a short note for your future self before ending your day.",
+  ];
 
   useEffect(() => {
     if (!isFocusRunning) {
@@ -93,6 +100,9 @@ const TaskListScreen = () => {
 
   const focusMinutes = String(Math.floor(focusSecondsLeft / 60)).padStart(2, "0");
   const focusSeconds = String(focusSecondsLeft % 60).padStart(2, "0");
+  const rotateTip = () => {
+    setTipIndex((current) => (current + 1) % noPermissionTips.length);
+  };
 
   const summary = useMemo(() => {
     const total = tasks.length;
@@ -228,6 +238,20 @@ const TaskListScreen = () => {
                     <Text style={styles.focusSecondaryButtonText}>Reset</Text>
                   </Pressable>
                 </View>
+              </View>
+              <View style={styles.noPermissionCard}>
+                <Text style={styles.noPermissionTitle}>No-permission boost</Text>
+                <Text style={styles.noPermissionSubtitle}>
+                  Helpful tips that run fully on-device with zero permissions.
+                </Text>
+                <Text style={styles.noPermissionTip}>{noPermissionTips[tipIndex]}</Text>
+                <Pressable
+                  onPress={rotateTip}
+                  style={styles.noPermissionButton}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.noPermissionButtonText}>Show another tip</Text>
+                </Pressable>
               </View>
             </>
           }
@@ -487,6 +511,48 @@ const styles = StyleSheet.create({
   },
   focusSecondaryButtonText: {
     color: "#334155",
+    fontWeight: "600",
+    fontSize: 13,
+  },
+  noPermissionCard: {
+    backgroundColor: "#FFFFFF",
+    marginHorizontal: 20,
+    marginTop: 2,
+    marginBottom: 8,
+    padding: 16,
+    borderRadius: 18,
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.08,
+    shadowRadius: 14,
+    elevation: 3,
+  },
+  noPermissionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#0F172A",
+  },
+  noPermissionSubtitle: {
+    marginTop: 6,
+    fontSize: 13,
+    color: "#64748B",
+  },
+  noPermissionTip: {
+    marginTop: 12,
+    fontSize: 14,
+    lineHeight: 21,
+    color: "#1E293B",
+  },
+  noPermissionButton: {
+    alignSelf: "flex-start",
+    marginTop: 12,
+    backgroundColor: "#EEF2FF",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 999,
+  },
+  noPermissionButtonText: {
+    color: "#1D4ED8",
     fontWeight: "600",
     fontSize: 13,
   },
