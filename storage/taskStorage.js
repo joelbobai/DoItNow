@@ -23,9 +23,9 @@ export const saveTasks = async (tasks) => {
 
 const createId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 
-export const addTask = async (title) => {
+export const addTask = async (title, dueDate = null) => {
   const tasks = await getTasks();
-  const newTask = { id: createId(), title, completed: false };
+  const newTask = { id: createId(), title, completed: false, dueDate };
   const updated = [newTask, ...tasks];
   await saveTasks(updated);
   return updated;
@@ -43,6 +43,15 @@ export const toggleTask = async (id) => {
 export const deleteTask = async (id) => {
   const tasks = await getTasks();
   const updated = tasks.filter((task) => task.id !== id);
+  await saveTasks(updated);
+  return updated;
+};
+
+export const updateTask = async (id, updates) => {
+  const tasks = await getTasks();
+  const updated = tasks.map((task) =>
+    task.id === id ? { ...task, ...updates } : task
+  );
   await saveTasks(updated);
   return updated;
 };

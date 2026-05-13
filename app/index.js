@@ -112,15 +112,27 @@ const TaskListScreen = () => {
     return { total, completed, active, progress };
   }, [tasks]);
 
+  const getTaskPriority = useCallback((task) => {
+    if (task.completed) return 5;
+    if (!task.dueDate) return 4;
+    const today = new Date().toISOString().split("T")[0];
+    if (task.dueDate < today) return 0;
+    if (task.dueDate === today) return 1;
+    return 3;
+  }, []);
+
   const filteredTasks = useMemo(() => {
+    let result = tasks;
     if (filter === "active") {
-      return tasks.filter((task) => !task.completed);
+      result = tasks.filter((task) => !task.completed);
     }
     if (filter === "completed") {
-      return tasks.filter((task) => task.completed);
+      result = tasks.filter((task) => task.completed);
     }
-    return tasks;
-  }, [filter, tasks]);
+    return [...result].sort(
+      (a, b) => getTaskPriority(a) - getTaskPriority(b),
+    );
+  }, [filter, tasks, getTaskPriority]);
 
   const taskSections = useMemo(
     () => [
